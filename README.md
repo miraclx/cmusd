@@ -12,20 +12,14 @@ This data is updated twice every second for precision.
 
 # Features
 * Album art: This is generated and rendered after being extracted by `ffmpeg`
-* Playback
- - Next
- - Previous
- - Pause
- - Play
- - PlayPause
- - Stop
+* Playback (Next, Previous, Pause, Play, PlayPause, Stop, Seek)
 * Hybrid Connection: The daemon can either spawn a `cmus` process within itself or connect to an already active one
 * Auto logging
 
 Installing
 ----------
 The project is written in Native JavaScript [NodeJS](https://github.com/nodejs/node).
-Install the interpreter [here](https://nodejs.org/en/download/)
+Install the interpreter and NPM [here](https://nodejs.org/en/download/)
 # Manually
 ``` bash
 $ git clone https://gitlab.com/Miraclx/cmusd/
