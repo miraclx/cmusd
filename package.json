@@ -17,7 +17,14 @@
     "mpris",
     "daemon"
   ],
-  "author": "Miraculous Owonubi",
+  "author": {
+    "name": "Miraculous Owonubi",
+    "email": "omiraculous@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Miraclx/cmusd.git"
+  },
   "license": "Apache-2.0",
   "dependencies": {
     "chalk": "^2.4.2",
