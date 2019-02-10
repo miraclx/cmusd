@@ -1,0 +1,26 @@
+{
+  "name": "cmusd",
+  "version": "1.0.0",
+  "description": "CMUS Media Player Integration",
+  "bin": {
+    "cmusd": "index.js"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cmus",
+    "media",
+    "player",
+    "integration",
+    "mpris",
+    "daemon"
+  ],
+  "author": "Miraculous Owonubi",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "mpris-service": "^1.1.4"
+  }
+}
