@@ -1,16 +1,9 @@
 #!/usr/bin/env node
 
-/*
- Shell
-$ cmus-remote -C "format_print {++artist++:++%a++,++album++:++%l++,++title++:++%t++,++genre++:++%g++,++bitrate++:++%{bitrate}++}" | sed s/[\"\']/\\\\\"/g | sed s/++/\"/g | \
-  node -e 'process.stdin.pipe(require("stream").Transform({transform(v,e,c){c(null, JSON.stringify(JSON.parse(v.toString()), null, 2))}})).pipe(process.stdout)' | less
-*/
-
 const fs = require('fs'),
   os = require('os'),
   url = require('url'),
   path = require('path'),
-  repl = require('repl'),
   util = require('util'),
   child_process = require('child_process'),
   querystring = require('querystring'),
@@ -31,15 +24,14 @@ player.CanSetFullscreen = false;
 
 let scanners = {
   cmdCut: /\s*\n\s*/g,
-  artistsParse: /\b\s*(?:&|,|(?:(?:feat(?:uring)?|f[et])\.))\s*/gi,
   statusParse: /(?:(set|tag)\s(\w+)\s(.+)|(\w+)\s(.+))/,
+  artistsParse: /\b\s*(?:&|,|(?:(?:feat(?:uring)?|f[et])\.))\s*/gi,
 };
 
 let dataSlice = {cores: {}, tag: {}, set: {}, raw: null};
 let tmpdir = path.join(os.tmpdir(), 'cmus-dir');
 
 let stack = {
-  replServer: null,
   state: -1,
   binary: 'cmus-remote',
   cmus_process: null,
