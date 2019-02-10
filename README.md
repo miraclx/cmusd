@@ -72,8 +72,8 @@ $ cmusd <folder>
 ![CMUS-D connected and logging](./screenshots/cmusd-logs.png)
 
 ## `Media player instance`
-![KDE Media Player displaying cmus music data](./screenshots/cmus-solo.png)
+![KDE Media Player displaying cmus music data](./screenshots/mpris-connect.png)
 
 # About
-## License: [Apache 2.0](LICENSE.md)
+## License: [Apache 2.0](LICENSE)
 ## Miraculous Owonubi: ([email](mailto:omiraculous@gmail.com))
