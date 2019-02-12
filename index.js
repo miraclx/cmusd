@@ -337,7 +337,7 @@ function checkActivity(connected) {
 }
 
 function checkCmusActivity() {
-  return !child_process.spawnSync('ps -e | grep cmus', {shell: true}).status;
+  return !child_process.spawnSync('ps -e | grep -e "\\bcmus\\b"', {shell: true}).status;
 }
 
 function closeApp(skipclean) {
