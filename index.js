@@ -2,11 +2,9 @@
 
 const fs = require('fs'),
   os = require('os'),
-  url = require('url'),
   path = require('path'),
   util = require('util'),
   child_process = require('child_process'),
-  querystring = require('querystring'),
   chalk = require('chalk'),
   Player = require('mpris-service');
 
@@ -143,10 +141,10 @@ function getStatus() {
 function getMetadata() {
   return {
     'mpris:length': getDuration(),
-    'mpris:artUrl': querystring.unescape(url.pathToFileURL(dataSlice.cores.art || '')),
+    'mpris:artUrl': `file://${dataSlice.cores.art}`,
     'mpris:trackid': player.objectPath(`tracklist/${parseSlice('tag', 'tracknumber')}`),
 
-    'xesam:url': url.pathToFileURL(dataSlice.cores.file).href,
+    'xesam:url': `file://${dataSlice.cores.file}`,
     'xesam:title': parseSlice('tag', 'title'),
     'xesam:album': parseSlice('tag', 'album'),
     'xesam:genre': parseSlice('tag', 'genre'),
@@ -214,8 +212,8 @@ function createAlbumArt() {
           '-i',
           dataSlice.cores.file,
           '-an',
-          '-vf',
-          'scale=-2:170',
+          // '-vf',
+          // 'scale=-2:170',
           '-vsync',
           '2',
           '-y',
@@ -234,13 +232,29 @@ function updateStatics(stopped) {
   player.metadata = getMetadata();
 }
 
+function getStaticArtURL() {
+  let dir = path.dirname(dataSlice.cores.file);
+  let art = ['cover', 'folder']
+    .flatMap(v => [v, v.replace(/^\w/, v => v.toUpperCase())])
+    .flatMap(v => ['.png', '.jpg'].map(e => path.join(dir, `${v}${e}`)))
+    .find(fs.existsSync);
+  return art;
+}
+
 function updateAlbumArt({status, tmpfile}) {
   if (~status) {
     if (status) log(1, 'albumart', `${chalk.cyan('[~]')} Using already existing album art for "${getThis()}"`);
     else log(1, 'albumart', `${chalk.green('[+]')} Album art for "${getThis()}" extracted successfully`);
     log(1, 'albumart', `|- ${chalk.cyan('(i)')} Location: "${tmpfile}"`);
-    dataSlice.cores.art = tmpfile;
-  } else log(1, 'albumart', `${chalk.red('[!]')} Album art generation for "${getThis()}" failed`);
+  } else {
+    log(1, 'albumart', `${chalk.red('[!]')} Album art generation for "${getThis()}" failed`);
+    log(1, 'albumart', `${chalk.cyan('[.]')} Checking static album art for "${getThis()}"`);
+    if (!(tmpfile = getStaticArtURL()))
+      return log(1, 'albumart', `|-${chalk.red('[!]')} Static album art for "${getThis()}" does not exist`);
+    log(1, 'albumart', `|- ${chalk.cyan('[~]')} Static album art for "${getThis()}" located!`);
+    log(1, 'albumart', `|- ${chalk.cyan('(i)')} Location: "${tmpfile}"`);
+  }
+  dataSlice.cores.art = tmpfile;
 }
 
 function updateMetaSlice() {
