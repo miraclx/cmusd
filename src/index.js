@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-const fs = require('fs'),
-  os = require('os'),
-  path = require('path'),
-  util = require('util'),
-  child_process = require('child_process'),
-  chalk = require('chalk'),
-  Player = require('mpris-service');
+import {existsSync, statSync, createWriteStream, mkdirSync, writeFileSync, unlinkSync, readdirSync} from 'fs';
+import {tmpdir as _tmpdir} from 'os';
+import {join, dirname} from 'path';
+import {format} from 'util';
+import {spawnSync, spawn} from 'child_process';
+import {underline, green, cyan, red, yellow} from 'chalk';
+import Player from 'mpris-service';
 
-var player = Player({
+const player = Player({
   name: 'cmus',
   identity: 'CMUS Media Player',
   supportedUriSchemes: ['file'],
@@ -27,7 +27,7 @@ let scanners = {
 };
 
 let dataSlice = {cores: {}, tag: {}, set: {}, raw: null};
-let tmpdir = path.join(os.tmpdir(), 'cmus-dir');
+let tmpdir = join(_tmpdir(), 'cmus-dir');
 
 let stack = {
   state: -1,
@@ -36,8 +36,8 @@ let stack = {
   tmp: {
     dir: tmpdir,
     albumart: '',
-    lock: path.join(tmpdir, '.lock'),
-    logdir: path.join(tmpdir, 'logs'),
+    lock: join(tmpdir, '.lock'),
+    logdir: join(tmpdir, 'logs'),
   },
   logfile: {path: null, stream: null},
   args: {
@@ -101,15 +101,15 @@ function setPosition(position) {
 }
 
 function setLogFile(file) {
-  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+  if (existsSync(file) && statSync(file).isDirectory()) {
     let time = new Date();
-    file = path.join(
+    file = join(
       file,
       `cmus_log_${time.getDate()}-${time.getMonth()}-${time.getFullYear()}_${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`
     );
   }
   stack.logfile.path = file;
-  stack.logfile.stream = fs.createWriteStream(file);
+  stack.logfile.stream = createWriteStream(file);
   log(1, 'logs', `Log file: "${stack.logfile.path}"`);
 }
 
@@ -137,7 +137,6 @@ function getStatus() {
     .slice(0, 1)
     .toUpperCase()}${parseSlice('cores', 'status').slice(1)}`;
 }
-
 function getMetadata() {
   return {
     'mpris:length': getDuration(),
@@ -171,26 +170,22 @@ function parsePosition(position) {
 function log(actor, action, message) {
   (stack.cmus_process && !stack.cmus_process.killed ? () => {} : console.log).call(
     null,
-    ...logWrite(
-      `[${!actor ? 'cmus' : actor == 1 ? 'bridge' : 'remote'}:${chalk.underline(`${action}`.padStart(9, ' '))}]:`,
-      message
-    )
+    ...logWrite(`[${!actor ? 'cmus' : actor == 1 ? 'bridge' : 'remote'}:${underline(`${action}`.padStart(9, ' '))}]:`, message)
   );
 }
 
 function logWrite(...msgs) {
-  if (stack.logfile.path) stack.logfile.stream.write(util.format(...msgs, '\n').replace(/\x1b\[\d+m/g, ''));
+  if (stack.logfile.path) stack.logfile.stream.write(format(...msgs, '\n').replace(/\x1b\[\d+m/g, ''));
   return msgs;
 }
 
 function pushArg(actor, args) {
-  let result = child_process
-    .spawnSync(
-      stack.binary,
-      (stack.args[actor].includes('%') ? ['-C', `format_print ${stack.args[actor]}`, args] : [stack.args[actor], args]).filter(
-        v => !!v || v == 0
-      )
+  let result = spawnSync(
+    stack.binary,
+    (stack.args[actor].includes('%') ? ['-C', `format_print ${stack.args[actor]}`, args] : [stack.args[actor], args]).filter(
+      v => !!v || v == 0
     )
+  )
     .stdout.toString()
     .trim();
   if (!['status', 'bitrate', 'play_count'].includes(actor)) updateMetaSlice();
@@ -198,7 +193,7 @@ function pushArg(actor, args) {
 }
 
 function createAlbumArt() {
-  let tmpfile = path.join(
+  let tmpfile = join(
     stack.tmp.dir,
     `${getThis('album')
       .toLowerCase()
@@ -206,9 +201,9 @@ function createAlbumArt() {
   );
   return {
     tmpfile,
-    status: fs.existsSync(tmpfile)
+    status: existsSync(tmpfile)
       ? 1
-      : !child_process.spawnSync('ffmpeg', [
+      : !spawnSync('ffmpeg', [
           '-i',
           dataSlice.cores.file,
           '-an',
@@ -219,40 +214,39 @@ function createAlbumArt() {
           '-y',
           tmpfile,
         ]).status
-        ? 0
-        : -1,
+      ? 0
+      : -1,
   };
 }
 
 function updateStatics(stopped) {
   if (stopped) return (player.metadata = {}), (player.playbackStatus = 'Stopped');
-  log(1, 'playlist', `${chalk.green('(\u2022)')} Now Playing: "${getThis()}"`);
-  log(1, 'playlist', `|- ${chalk.cyan('(i)')} Music Location: "${dataSlice.cores.file}"`);
+  log(1, 'playlist', `${green('(\u2022)')} Now Playing: "${getThis()}"`);
+  log(1, 'playlist', `|- ${cyan('(i)')} Music Location: "${dataSlice.cores.file}"`);
   updateAlbumArt(createAlbumArt());
   player.metadata = getMetadata();
 }
 
 function getStaticArtURL() {
-  let dir = path.dirname(dataSlice.cores.file);
+  let dir = dirname(dataSlice.cores.file);
   let art = ['cover', 'folder']
     .flatMap(v => [v, v.replace(/^\w/, v => v.toUpperCase())])
-    .flatMap(v => ['.png', '.jpg'].map(e => path.join(dir, `${v}${e}`)))
-    .find(fs.existsSync);
+    .flatMap(v => ['.png', '.jpg'].map(e => join(dir, `${v}${e}`)))
+    .find(existsSync);
   return art;
 }
-
 function updateAlbumArt({status, tmpfile}) {
   if (~status) {
-    if (status) log(1, 'albumart', `${chalk.cyan('[~]')} Using already existing album art for "${getThis()}"`);
-    else log(1, 'albumart', `${chalk.green('[+]')} Album art for "${getThis()}" extracted successfully`);
-    log(1, 'albumart', `|- ${chalk.cyan('(i)')} Location: "${tmpfile}"`);
+    if (status) log(1, 'albumart', `${cyan('[~]')} Using already existing album art for "${getThis()}"`);
+    else log(1, 'albumart', `${green('[+]')} Album art for "${getThis()}" extracted successfully`);
+    log(1, 'albumart', `|- ${cyan('(i)')} Location: "${tmpfile}"`);
   } else {
-    log(1, 'albumart', `${chalk.red('[!]')} Album art generation for "${getThis()}" failed`);
-    log(1, 'albumart', `${chalk.cyan('[.]')} Checking static album art for "${getThis()}"`);
+    log(1, 'albumart', `${red('[!]')} Album art generation for "${getThis()}" failed`);
+    log(1, 'albumart', `${cyan('[.]')} Checking static album art for "${getThis()}"`);
     if (!(tmpfile = getStaticArtURL()))
-      return log(1, 'albumart', `|-${chalk.red('[!]')} Static album art for "${getThis()}" does not exist`);
-    log(1, 'albumart', `|- ${chalk.cyan('[~]')} Static album art for "${getThis()}" located!`);
-    log(1, 'albumart', `|- ${chalk.cyan('(i)')} Location: "${tmpfile}"`);
+      return log(1, 'albumart', `|-${red('[!]')} Static album art for "${getThis()}" does not exist`);
+    log(1, 'albumart', `|- ${cyan('[~]')} Static album art for "${getThis()}" located!`);
+    log(1, 'albumart', `|- ${cyan('(i)')} Location: "${tmpfile}"`);
   }
   dataSlice.cores.art = tmpfile;
 }
@@ -286,14 +280,13 @@ function updateMetaSlice() {
 
 function attachEvents() {
   Object.entries(stack.events).forEach(([event, actor]) =>
-    player.on(event, (...args) => (log(2, 'command', `${chalk.green('[:]')} Recieved \`${event}\``), actor(...args)))
+    player.on(event, (...args) => (log(2, 'command', `${green('[:]')} Recieved \`${event}\``), actor(...args)))
   );
 }
 
 function initNativeCmus() {
   log(1, 'init', 'Initialized `cmus`');
-  stack.cmus_process = child_process
-    .spawn('cmus', {stdio: 'inherit'})
+  stack.cmus_process = spawn('cmus', {stdio: 'inherit'})
     .on('close', () => (stack.cmus_process.killed = true))
     .on('close', closeApp);
   return stack.cmus_process;
@@ -310,56 +303,56 @@ function initClientMonitor(time) {
 }
 
 function checkTmp() {
-  if (!fs.existsSync(stack.tmp.dir)) fs.mkdirSync(stack.tmp.dir);
-  if (!fs.existsSync(stack.tmp.logdir)) fs.mkdirSync(stack.tmp.logdir);
-  if (dataSlice.cores.art && !fs.existsSync(dataSlice.cores.art)) {
-    log(1, 'status', `${chalk.red('[!]')} Album art deleted`);
+  if (!existsSync(stack.tmp.dir)) mkdirSync(stack.tmp.dir);
+  if (!existsSync(stack.tmp.logdir)) mkdirSync(stack.tmp.logdir);
+  if (dataSlice.cores.art && !existsSync(dataSlice.cores.art)) {
+    log(1, 'status', `${red('[!]')} Album art deleted`);
     updateAlbumArt(createAlbumArt());
-    log(1, 'status', `${chalk.green('[\u2022]')} Album art recreated`);
+    log(1, 'status', `${green('[\u2022]')} Album art recreated`);
   }
 }
 
 function checkStatics(force) {
   checkTmp();
-  if (fs.existsSync(stack.tmp.lock) && force) {
-    log(1, 'init', `${chalk.red('[!]')} cmus-client is already running or was terminated abruptly, lock file: ${stack.tmp.lock}`),
+  if (existsSync(stack.tmp.lock) && force) {
+    log(1, 'init', `${red('[!]')} cmus-client is already running or was terminated abruptly, lock file: ${stack.tmp.lock}`),
       closeApp(true);
-  } else fs.writeFileSync(stack.tmp.lock, '');
+  } else writeFileSync(stack.tmp.lock, '');
 }
 
 function checkArgs() {
   if (process.argv.includes('-q')) {
-    if (fs.existsSync(stack.tmp.lock)) {
-      fs.unlinkSync(stack.tmp.lock);
-      if (fs.existsSync(stack.tmp.lock)) console.log(`${chalk.red('[!] Failed to unlink the lock file')}`);
-      else console.log(`${chalk.green('[\u2022]')} Successfully unlinked the lock file`), process.exit();
-    } else console.log(`${chalk.yellow('[i] Lock file is non existent')}`), process.exit();
+    if (existsSync(stack.tmp.lock)) {
+      unlinkSync(stack.tmp.lock);
+      if (existsSync(stack.tmp.lock)) console.log(`${red('[!] Failed to unlink the lock file')}`);
+      else console.log(`${green('[\u2022]')} Successfully unlinked the lock file`), process.exit();
+    } else console.log(`${yellow('[i] Lock file is non existent')}`), process.exit();
   }
 
   if (process.argv.includes('-x')) {
-    fs.readdirSync(stack.tmp.logdir).map(logfile => fs.unlinkSync(path.join(stack.tmp.logdir, logfile))),
-      console.log(`${chalk.green('[\u2022]')} Successfully removed all log files`);
+    readdirSync(stack.tmp.logdir).map(logfile => unlinkSync(join(stack.tmp.logdir, logfile))),
+      console.log(`${green('[\u2022]')} Successfully removed all log files`);
     process.exit();
   }
 }
 
 function checkActivity(connected) {
-  if (stack.state < 1 && connected) (stack.state = 1), log(1, 'status', `${chalk.green('[+]')} cmus connected`);
-  else if (!~stack.state && !connected) (stack.state = 0), log(1, 'status', `${chalk.cyan('[-]')} awaiing cmus connection`);
+  if (stack.state < 1 && connected) (stack.state = 1), log(1, 'status', `${green('[+]')} cmus connected`);
+  else if (!~stack.state && !connected) (stack.state = 0), log(1, 'status', `${cyan('[-]')} awaiing cmus connection`);
   else if (stack.state && !connected)
-    (stack.state = -1), log(1, 'status', `${chalk.red('[-]')} cmus disconnected`), updateStatics(true);
+    (stack.state = -1), log(1, 'status', `${red('[-]')} cmus disconnected`), updateStatics(true);
 }
 
 function checkCmusActivity() {
-  return !child_process.spawnSync('ps -e | grep -e "\\bcmus\\b"', {shell: true}).status;
+  return !spawnSync('ps -e | grep -e "\\bcmus\\b"', {shell: true}).status;
 }
 
 function closeApp(skipclean) {
   function carryOn() {
-    if (!skipclean && fs.existsSync(stack.tmp.lock)) {
-      fs.unlinkSync(stack.tmp.lock);
-      if (fs.existsSync(stack.tmp.lock)) log(1, 'cleanup', `${chalk.red('[!] Failed to unlink the lock file')}`);
-      else log(1, 'cleanup', `${chalk.green('[\u2022]')} Successfully unlinked the lock file`);
+    if (!skipclean && existsSync(stack.tmp.lock)) {
+      unlinkSync(stack.tmp.lock);
+      if (existsSync(stack.tmp.lock)) log(1, 'cleanup', `${red('[!] Failed to unlink the lock file')}`);
+      else log(1, 'cleanup', `${green('[\u2022]')} Successfully unlinked the lock file`);
     }
     process.exit();
   }
@@ -376,11 +369,11 @@ void (function main(logfile) {
   setLogFile(logfile || stack.tmp.logdir);
 
   if (!checkCmusActivity()) initNativeCmus();
-  else log(1, 'init', `${chalk.cyan('[~]')} cmus already running, connecting to it`);
+  else log(1, 'init', `${cyan('[~]')} cmus already running, connecting to it`);
 
   attachEvents();
 
-  log(1, 'init', `${chalk.green('[+]')} cmus-client launched and listening!`);
+  log(1, 'init', `${green('[+]')} cmus-client launched and listening!`);
   initClientMonitor(500);
 
   process.on('exit', closeApp).on('SIGINT', closeApp);

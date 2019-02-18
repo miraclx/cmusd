@@ -1,13 +1,14 @@
 {
   "name": "cmusd",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "CMUS Media Player Integration",
   "bin": {
-    "cmusd": "index.js"
+    "cmusd": "dist/index.js"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel src -d dist",
+    "test": "echo \"There's no possible way to test this since it spawns or integrates with the cmus binary so it would run if you have the cmus binary installed\""
   },
   "keywords": [
     "cmus",
@@ -21,13 +22,39 @@
     "name": "Miraculous Owonubi",
     "email": "omiraculous@gmail.com"
   },
+  "maintainers": [
+    {
+      "name": "Miraculous Owonubi",
+      "email": "omiraculous@gmail.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Miraclx/cmusd.git"
   },
+  "bugs": {
+    "url": "https://github.com/Miraclx/cmusd/issues"
+  },
   "license": "Apache-2.0",
+  "babel": {
+    "presets": [
+      "airbnb",
+      "@babel/preset-env"
+    ]
+  },
   "dependencies": {
     "chalk": "^2.4.2",
     "mpris-service": "^1.1.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
+    "babel-eslint": "^10.0.1",
+    "babel-preset-airbnb": "^3.2.0",
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^3.0.1"
   }
 }
