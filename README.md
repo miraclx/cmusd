@@ -1,7 +1,7 @@
 CMUS-D (C* Music Player Daemon)
 ===============================
 
-This package provides a remote graphical frontend for the [C* Music Player](https://github.com/cmus/cmus) using the `MPRIS D-Bus Interface`
+This package provides a remote graphical frontend for the [C* Music Player][cmus] using the `MPRIS D-Bus Interface`
 
 How it works
 ------------
@@ -20,15 +20,15 @@ Installing
 The project is written in Native JavaScript [NodeJS](https://github.com/nodejs/node).
 [Download and install Node.js, NPM](https://nodejs.org/en/download/).
 
+### Via [NPM][npm]
+``` bash
+$ npm install cmusd -g
+```
 ### Manual Installatiion
 ``` bash
-$ git clone https://gitlab.com/Miraclx/cmusd/
+$ git clone https://gitlab.com/Miraclx/cmusd.git
 $ cd cmusd
-$ npm install -g
-```
-### NPM
-``` bash
-$ npm install cmusd --global
+$ npm run setup
 ```
 
 Usage
@@ -37,10 +37,11 @@ Usage
 $ # Launch the daemon
 $ cmusd
 
-$ # Clean all logfiles
+$ # Clean all logfiles, quit
 $ cmusd -x
 
-$ # Remove the lockfile, incase previous process didn't close correctly
+$ # Remove the lockfile, quit
+$ # (incase previous process didn't close correctly)
 $ cmusd -q
 
 $ # Write log to specific file
@@ -51,8 +52,8 @@ $ cmusd <folder>
 ```
 
 * Lock file: `<os-tmp-dir>/cmus-dir/.lock`
-* Album Art folder: `<os-tmp-dir>/cmus-dir`
-* Default log folder: `<os-tmp-dir>/cmus-dir/logs`
+* Album Art cache folder: `<os-tmp-dir>/cmus-dir/`
+* Default log folder: `<os-tmp-dir>/cmus-dir/logs/`
 
 # Screenshots
 ## `Simple Command`
@@ -74,6 +75,22 @@ $ cmusd <folder>
 ## `Media player instance`
 ![KDE Media Player displaying cmus music data](./screenshots/mpris-connect.png)
 
-# About
-## License: [Apache 2.0](LICENSE)
-## Miraculous Owonubi: ([email](mailto:omiraculous@gmail.com))
+
+## Development
+### Building
+Use in adherance to the [license][license], feel free to send some pull requests
+```
+$ git clone https://github.com/Miraclx/cmusd.git
+$ cd cmusd
+$ npm install
+$ # hack on code
+$ npm run build
+```
+
+## About
+### License: [Apache 2.0][license]
+### Miraculous Owonubi: [[email]](mailto:omiraculous@gmail.com) <https://github.com/Miraclx>
+
+[npm]:  https://github.com/npm/npm "The Node Package Manager"
+[cmus]:  https://github.com/cmus/cmus "C* Music Player"
+[license]:  LICENSE "Apache 2.0 License"
