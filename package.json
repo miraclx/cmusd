@@ -19,15 +19,9 @@
     "mpris",
     "daemon"
   ],
-  "author": {
-    "name": "Miraculous Owonubi",
-    "email": "omiraculous@gmail.com"
-  },
+  "author": "Miraculous Owonubi <omiraculous@gmail.com>",
   "maintainers": [
-    {
-      "name": "Miraculous Owonubi",
-      "email": "omiraculous@gmail.com"
-    }
+    "Miraculous Owonubi <omiraculous@gmail.com>"
   ],
   "repository": {
     "type": "git",
@@ -59,4 +53,5 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-prettier": "^3.0.1"
   },
+  "homepage": "https://github.com/Miraclx/cmusd#readme"
 }
