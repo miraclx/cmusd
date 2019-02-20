@@ -11,6 +11,7 @@
     "setup": "npm install && npm run build && npm link",
     "test": "echo \"There's no possible way to test this since it spawns or integrates with the cmus binary so it would run if you have the cmus binary installed\""
   },
+  "files": ["src", "bin"],
   "keywords": [
     "cmus",
     "media",

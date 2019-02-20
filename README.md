@@ -57,23 +57,23 @@ $ cmusd <folder>
 
 # Screenshots
 ## `Simple Command`
-![CMUS-D Simple Command](./screenshots/cmusd.png "CMUS-D Simple Command")
+![CMUS-D Simple Command](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/cmusd.png "CMUS-D Simple Command")
 ## `Basic Run, spawns cmus within (if not already running)`
-![cmus in terminal, spawned from cmusd](./screenshots/cmusd-spawn.png "CMUS-D Spawning a cmus process within itself (if not already running)")
+![cmus in terminal, spawned from cmusd](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/cmusd-spawn.png "CMUS-D Spawning a cmus process within itself (if not already running)")
 ## `Media player instance`
-![KDE Media Player displaying cmus music data](./screenshots/mpris-player.png "KDE Media Player displaying cmus music data")
+![KDE Media Player displaying cmus music data](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/mpris-player.png "KDE Media Player displaying cmus music data")
 
 # Connect to an actively running cmus process
-![CMUS-D Basic Use](./screenshots/cmusd-connect.png)
+![CMUS-D Basic Use](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/cmusd-connect.png)
 
 ## `Already running CMUS`
-![CMUS running on another terminal window](./screenshots/cmus-solo.png)
+![CMUS running on another terminal window](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/cmus-solo.png)
 
 ## `CMUS-D Connected and logging`
-![CMUS-D connected and logging](./screenshots/cmusd-logs.png)
+![CMUS-D connected and logging](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/cmusd-logs.png)
 
 ## `Media player instance`
-![KDE Media Player displaying cmus music data](./screenshots/mpris-connect.png)
+![KDE Media Player displaying cmus music data](https://raw.githubusercontent.com/Miraclx/cmusd/master/screenshots/mpris-connect.png)
 
 
 ## Development
