@@ -3,11 +3,12 @@
   "version": "1.1.0",
   "description": "CMUS Media Player Integration",
   "bin": {
-    "cmusd": "dist/index.js"
+    "cmusd": "bin/index.js"
   },
-  "main": "dist/index.js",
+  "main": "bin/index.js",
   "scripts": {
-    "build": "babel src -d dist",
+    "build": "babel src -d bin",
+    "setup": "npm install && npm run build && npm link",
     "test": "echo \"There's no possible way to test this since it spawns or integrates with the cmus binary so it would run if you have the cmus binary installed\""
   },
   "keywords": [
