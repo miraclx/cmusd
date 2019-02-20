@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* eslint no-use-before-define: 0 */
 import {existsSync, statSync, createWriteStream, mkdirSync, writeFileSync, unlinkSync, readdirSync} from 'fs';
 import {tmpdir as _tmpdir} from 'os';
 import {join, dirname} from 'path';
@@ -20,16 +20,16 @@ player.canRaise = false;
 player.Fullscreen = false;
 player.CanSetFullscreen = false;
 
-let scanners = {
+const scanners = {
   cmdCut: /\s*\n\s*/g,
   statusParse: /(?:(set|tag)\s(\w+)\s(.+)|(\w+)\s(.+))/,
   artistsParse: /\b\s*(?:&|,|(?:(?:feat(?:uring)?|f[et])\.))\s*/gi,
 };
 
 let dataSlice = {cores: {}, tag: {}, set: {}, raw: null};
-let tmpdir = join(_tmpdir(), 'cmus-dir');
+const tmpdir = join(_tmpdir(), 'cmus-dir');
 
-let stack = {
+const stack = {
   state: -1,
   binary: 'cmus-remote',
   cmus_process: null,
@@ -77,9 +77,9 @@ let stack = {
     },
     volume(volume) {
       volume = (volume * 100 + 0.5) | 0;
-      let _volume = getBalancedVolume(true) | 0;
-      let __volume = `${volume < _volume ? '-' : '+'}${Math.abs(_volume - volume)}`;
-      log(2, 'volume', `Update [L|R]: ${__volume}%`);
+      const balancedVolume = getBalancedVolume(true) | 0;
+      const parsedVolume = `${volume < balancedVolume ? '-' : '+'}${Math.abs(balancedVolume - volume)}`;
+      log(2, 'volume', `Update [L|R]: ${parsedVolume}%`);
       pushArg('volume', `${volume}%`);
       log(1, 'volume', `Current Volume: ${getBalancedVolume(true)}%`);
     },
@@ -102,10 +102,10 @@ function setPosition(position) {
 
 function setLogFile(file) {
   if (existsSync(file) && statSync(file).isDirectory()) {
-    let time = new Date();
+    const time = new Date();
     file = join(
       file,
-      `cmus_log_${time.getDate()}-${time.getMonth()}-${time.getFullYear()}_${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`
+      `cmus_log_${time.getDate()}-${time.getMonth()}-${time.getFullYear()}_${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`,
     );
   }
   stack.logfile.path = file;
@@ -122,12 +122,12 @@ function getBalancedVolume(host) {
 }
 
 function getPosition(parse) {
-  let val = Math.round(dataSlice.cores.position) * 1000 ** 2;
+  const val = Math.round(dataSlice.cores.position) * 1000 ** 2;
   return !parse ? val : parsePosition(val);
 }
 
 function getDuration(parse) {
-  let val = Math.round(dataSlice.cores.duration) * 1000 ** 2;
+  const val = Math.round(dataSlice.cores.duration) * 1000 ** 2;
   return !parse ? val : parsePosition(val);
 }
 
@@ -163,14 +163,14 @@ function parseSlice(slot, key) {
 }
 
 function parsePosition(position) {
-  let time = new Date(position / 1000);
+  const time = new Date(position / 1000);
   return `${`${time.getMinutes()}`.padStart(2, 0)}:${`${time.getSeconds()}`.padStart(2, 0)}`;
 }
 
 function log(actor, action, message) {
   (stack.cmus_process && !stack.cmus_process.killed ? () => {} : console.log).call(
     null,
-    ...logWrite(`[${!actor ? 'cmus' : actor == 1 ? 'bridge' : 'remote'}:${underline(`${action}`.padStart(9, ' '))}]:`, message)
+    ...logWrite(`[${!actor ? 'cmus' : actor === 1 ? 'bridge' : 'remote'}:${underline(`${action}`.padStart(9, ' '))}]:`, message),
   );
 }
 
@@ -180,11 +180,11 @@ function logWrite(...msgs) {
 }
 
 function pushArg(actor, args) {
-  let result = spawnSync(
+  const result = spawnSync(
     stack.binary,
     (stack.args[actor].includes('%') ? ['-C', `format_print ${stack.args[actor]}`, args] : [stack.args[actor], args]).filter(
-      v => !!v || v == 0
-    )
+      v => !!v || v === 0,
+    ),
   )
     .stdout.toString()
     .trim();
@@ -193,11 +193,11 @@ function pushArg(actor, args) {
 }
 
 function createAlbumArt() {
-  let tmpfile = join(
+  const tmpfile = join(
     stack.tmp.dir,
     `${getThis('album')
       .toLowerCase()
-      .replace(/['"\s,]/g, '_')}.jpg`
+      .replace(/['"\s,]/g, '_')}.jpg`,
   );
   return {
     tmpfile,
@@ -214,13 +214,16 @@ function createAlbumArt() {
           '-y',
           tmpfile,
         ]).status
-      ? 0
-      : -1,
+        ? 0
+        : -1,
   };
 }
 
 function updateStatics(stopped) {
-  if (stopped) return (player.metadata = {}), (player.playbackStatus = 'Stopped');
+  if (stopped) {
+    [player.metadata, player.playbackStatus] = [{}, 'Stopped'];
+    return;
+  }
   log(1, 'playlist', `${green('(\u2022)')} Now Playing: "${getThis()}"`);
   log(1, 'playlist', `|- ${cyan('(i)')} Music Location: "${dataSlice.cores.file}"`);
   updateAlbumArt(createAlbumArt());
@@ -228,9 +231,9 @@ function updateStatics(stopped) {
 }
 
 function getStaticArtURL() {
-  let dir = dirname(dataSlice.cores.file);
-  let art = ['cover', 'folder']
-    .flatMap(v => [v, v.replace(/^\w/, v => v.toUpperCase())])
+  const dir = dirname(dataSlice.cores.file);
+  const art = ['cover', 'folder']
+    .flatMap(v => [v, v.replace(/^\w/, c => c.toUpperCase())])
     .flatMap(v => ['.png', '.jpg'].map(e => join(dir, `${v}${e}`)))
     .find(existsSync);
   return art;
@@ -249,24 +252,25 @@ function updateAlbumArt({status, tmpfile}) {
     log(1, 'albumart', `|- ${cyan('(i)')} Location: "${tmpfile}"`);
   }
   dataSlice.cores.art = tmpfile;
+  return undefined;
 }
 
 function updateMetaSlice() {
-  let status = pushArg('status')
-      .split(scanners.cmdCut)
-      .filter(v => !!v),
-    [staticFile, staticArt, staticVolume, staticPosition] = [
-      dataSlice.cores.file,
-      dataSlice.cores.art,
-      getBalancedVolume(),
-      getPosition(),
-    ];
+  const status = pushArg('status')
+    .split(scanners.cmdCut)
+    .filter(v => !!v);
+  const [staticFile, staticArt, staticVolume, staticPosition] = [
+    dataSlice.cores.file,
+    dataSlice.cores.art,
+    getBalancedVolume(),
+    getPosition(),
+  ];
   dataSlice = {cores: {}, tag: {}, set: {}, raw: status};
   if (!status.length) return checkActivity();
-  status.map(line => {
-    let [, mnemonic, key, value, root_key, root_value] = line.match(scanners.statusParse);
+  status.forEach(line => {
+    const [, mnemonic, key, value, rootKey, rootValue] = line.match(scanners.statusParse);
     if (mnemonic) dataSlice[mnemonic][key] = value;
-    else dataSlice.cores[root_key] = root_value;
+    else dataSlice.cores[rootKey] = rootValue;
   });
   dataSlice.cores.art = staticArt;
   dataSlice.tag.bitrate = pushArg('bitrate') | 0;
@@ -280,7 +284,7 @@ function updateMetaSlice() {
 
 function attachEvents() {
   Object.entries(stack.events).forEach(([event, actor]) =>
-    player.on(event, (...args) => (log(2, 'command', `${green('[:]')} Recieved \`${event}\``), actor(...args)))
+    player.on(event, (...args) => (log(2, 'command', `${green('[:]')} Recieved \`${event}\``), actor(...args))),
   );
 }
 
@@ -360,7 +364,7 @@ function closeApp(skipclean) {
   else carryOn();
 }
 
-void (function main(logfile) {
+(function main(logfile) {
   log(1, 'init', 'cmus-client starting...');
   checkTmp();
   checkArgs();
