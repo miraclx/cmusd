@@ -1,5 +1,6 @@
-CMUS-D (C* Music Player Daemon)
+CMUS-D
 ===============================
+> [C* Music Player][cmus] media interface daemon
 
 This package provides a remote graphical frontend for the [C* Music Player][cmus] using the `MPRIS D-Bus Interface`
 
@@ -86,10 +87,10 @@ $ npm install
 $ # hack on code
 $ npm run build
 ```
-
 ## About
-License: [Apache 2.0][license]
-
+### License
+[Apache 2.0][license]
+### Author
 Miraculous Owonubi: [[email]](mailto:omiraculous@gmail.com) <https://github.com/Miraclx>
 
 [npm]:  https://github.com/npm/npm "The Node Package Manager"
