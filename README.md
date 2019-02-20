@@ -88,8 +88,9 @@ $ npm run build
 ```
 
 ## About
-### License: [Apache 2.0][license]
-### Miraculous Owonubi: [[email]](mailto:omiraculous@gmail.com) <https://github.com/Miraclx>
+License: [Apache 2.0][license]
+
+Miraculous Owonubi: [[email]](mailto:omiraculous@gmail.com) <https://github.com/Miraclx>
 
 [npm]:  https://github.com/npm/npm "The Node Package Manager"
 [cmus]:  https://github.com/cmus/cmus "C* Music Player"
