@@ -1,6 +1,6 @@
 {
   "name": "cmusd",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "CMUS Media Player Integration",
   "bin": {
     "cmusd": "bin/index.js"
