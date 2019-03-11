@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint no-use-before-define: 0 */
 import {existsSync, statSync, createWriteStream, mkdirSync, writeFileSync, unlinkSync, readdirSync} from 'fs';
-import {tmpdir as _tmpdir} from 'os';
+import {tmpdir as _tmpdir, platform} from 'os';
 import {join, dirname} from 'path';
 import {format} from 'util';
 import {spawnSync, spawn} from 'child_process';
@@ -354,6 +354,28 @@ function checkCmusActivity() {
   return !spawnSync('ps -e | grep -e "\\bcmus\\b"', {shell: true}).status;
 }
 
+function checkDbus() {
+  const dbusBins = ['dbus-send', 'dbus-launch', 'dbus-monitor', 'dbus-daemon'];
+  if (spawnSync('/usr/bin/which', [...dbusBins]).status) {
+    log(1, 'init', `${red('[!]')} Failed to find an appropriate installation of [dbus]`);
+    log(1, 'init', `${yellow('[i]')} This is not an issue with [cmusd]. Please check that dbus is installed and on your path`);
+    log(1, 'init', ` - For non-Linux OS's please check for an existing issue or file a new one to track progress`);
+    log(1, 'init', ` - in adding support for your OS's media player or simply file a pull request`);
+    closeApp(true);
+  }
+}
+
+function checkPlatform() {
+  if (platform === 'linux')
+    log(
+      1,
+      'init',
+      `${yellow(
+        '[i]',
+      )} The D-Bus interface this program uses to communicate is natively used on linux hence, this script may not run as expected`,
+    );
+}
+
 function closeApp(skipclean) {
   function carryOn() {
     if (!skipclean && existsSync(stack.tmp.lock)) {
@@ -369,8 +391,12 @@ function closeApp(skipclean) {
 
 (function main(logfile) {
   log(1, 'init', 'cmus-client starting...');
+
   checkTmp();
   checkArgs();
+
+  checkDbus();
+  checkPlatform();
 
   checkStatics(true);
   setLogFile(logfile || stack.tmp.logdir);
