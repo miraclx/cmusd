@@ -105,7 +105,10 @@ function setLogFile(file) {
     const time = new Date();
     file = join(
       file,
-      `cmus_log_${time.getDate()}-${time.getMonth()}-${time.getFullYear()}_${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`,
+      `cmus_log_${time.getDate()}-${time
+        .getMonth()
+        .toString()
+        .padStart(2, 0)}-${time.getFullYear()}_${time.getHours()}-${time.getMinutes()}-${time.getSeconds()}`,
     );
   }
   stack.logfile.path = file;
@@ -335,7 +338,7 @@ function checkArgs() {
 
   if (process.argv.includes('-x')) {
     readdirSync(stack.tmp.logdir).map(logfile => unlinkSync(join(stack.tmp.logdir, logfile))),
-      console.log(`${green('[\u2022]')} Successfully removed all log files`);
+      log(`${green('[\u2022]')} Successfully removed all log files`);
     process.exit();
   }
 }
