@@ -13,6 +13,9 @@
     "version": "npm run build",
     "postversion": "git push && git push --tags"
   },
+  "engines": {
+    "node": ">=4"
+  },
   "files": [
     "bin"
   ],
@@ -39,11 +42,18 @@
   "babel": {
     "presets": [
       "airbnb",
-      "@babel/preset-env"
+      [
+        "@babel/preset-env",
+        {
+          "useBuiltIns": "usage"
+        }
+      ]
     ]
   },
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
     "chalk": "^2.4.2",
+    "core-js": "^2.6.5",
     "mpris-service": "^1.1.4"
   },
   "devDependencies": {
