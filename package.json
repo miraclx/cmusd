@@ -29,10 +29,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Miraclx/cmusd.git"
+    "url": "git+https://github.com/miraclx/cmusd.git"
   },
   "bugs": {
-    "url": "https://github.com/Miraclx/cmusd/issues"
+    "url": "https://github.com/miraclx/cmusd/issues"
   },
   "license": "Apache-2.0",
   "babel": {
@@ -58,5 +58,5 @@
     "eslint-plugin-prettier": "^3.0.1",
     "prettier": "^1.16.4"
   },
-  "homepage": "https://github.com/Miraclx/cmusd#readme"
+  "homepage": "https://github.com/miraclx/cmusd#readme"
 }
