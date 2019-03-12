@@ -21,12 +21,21 @@
     "bin"
   ],
   "keywords": [
+    "cli",
     "cmus",
+    "music",
     "media",
     "player",
     "integration",
     "mpris",
-    "daemon"
+    "mpris2",
+    "daemon",
+    "musicplayer",
+    "gui",
+    "dbus",
+    "albumart",
+    "mediakeys",
+    "keys"
   ],
   "author": "Miraculous Owonubi <omiraculous@gmail.com>",
   "maintainers": [
