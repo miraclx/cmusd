@@ -9,7 +9,7 @@
   "scripts": {
     "build": "babel src -d bin",
     "setup": "npm install && npm run build && npm link",
-    "push": "git push github && git push gitlab",
+    "push": "git push github master && git push gitlab master",
     "test": "echo \"There's no possible way to test this since it spawns or integrates with the cmus binary so it would run if you have the cmus binary installed\"",
     "version": "npm run build",
     "postversion": "npm run push"
