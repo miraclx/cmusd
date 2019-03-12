@@ -9,9 +9,10 @@
   "scripts": {
     "build": "babel src -d bin",
     "setup": "npm install && npm run build && npm link",
+    "push": "git push github && git push gitlab",
     "test": "echo \"There's no possible way to test this since it spawns or integrates with the cmus binary so it would run if you have the cmus binary installed\"",
     "version": "npm run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "npm run push"
   },
   "engines": {
     "node": ">=4"
