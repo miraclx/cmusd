@@ -4,6 +4,7 @@ import {existsSync, statSync, createWriteStream, mkdirSync, writeFileSync, unlin
 import {tmpdir as _tmpdir, platform} from 'os';
 import {join, dirname} from 'path';
 import {format} from 'util';
+import {pathToFileURL} from 'url';
 import {spawnSync, spawn} from 'child_process';
 import {underline, green, cyan, red, yellow} from 'chalk';
 import Player from 'mpris-service';
@@ -143,10 +144,10 @@ function getStatus() {
 function getMetadata() {
   return {
     'mpris:length': getDuration(),
-    'mpris:artUrl': `file://${dataSlice.cores.art}`,
+    'mpris:artUrl': pathToFileURL(dataSlice.cores.art).href,
     'mpris:trackid': player.objectPath(`tracklist/${parseSlice('tag', 'tracknumber')}`),
 
-    'xesam:url': `file://${dataSlice.cores.file}`,
+    'xesam:url': pathToFileURL(dataSlice.cores.file).href,
     'xesam:title': parseSlice('tag', 'title'),
     'xesam:album': parseSlice('tag', 'album'),
     'xesam:genre': parseSlice('tag', 'genre'),
