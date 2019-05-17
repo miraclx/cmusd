@@ -330,17 +330,18 @@ function checkStatics(force) {
 
 function checkArgs() {
   if (process.argv.includes('-q')) {
+    process.argv.splice(process.argv.indexOf('-q'), 1);
     if (existsSync(stack.tmp.lock)) {
       unlinkSync(stack.tmp.lock);
-      if (existsSync(stack.tmp.lock)) console.log(`${red('[!] Failed to unlink the lock file')}`);
-      else console.log(`${green('[\u2022]')} Successfully unlinked the lock file`), process.exit();
-    } else console.log(`${yellow('[i] Lock file is non existent')}`), process.exit();
+      if (existsSync(stack.tmp.lock)) log(1, 'args:-q', `${red('[!] Failed to unlink the lock file')}`);
+      else log(1, 'args:-q', `${green('[\u2022]')} Successfully unlinked the lock file`);
+    } else log(1, 'args:-q', `${yellow('[i] Lock file is non existent')}`);
   }
 
   if (process.argv.includes('-x')) {
+    process.argv.splice(process.argv.indexOf('-x'), 1);
     readdirSync(stack.tmp.logdir).map(logfile => unlinkSync(join(stack.tmp.logdir, logfile))),
-      log(`${green('[\u2022]')} Successfully removed all log files`);
-    process.exit();
+      log(1, 'args:-x', `${green('[\u2022]')} Successfully removed all log files`);
   }
 }
 
@@ -408,7 +409,7 @@ function closeApp(skipclean) {
   else carryOn();
 }
 
-(function main(logfile) {
+(function main() {
   log(1, 'init', 'cmus-client starting...');
 
   checkTmp();
@@ -420,7 +421,7 @@ function closeApp(skipclean) {
   checkPlatform();
 
   checkStatics(true);
-  setLogFile(logfile || stack.tmp.logdir);
+  setLogFile(process.argv[2] || stack.tmp.logdir);
 
   if (!checkCmusActivity()) initNativeCmus();
   else log(1, 'init', `${cyan('[~]')} cmus already running, connecting to it`);
@@ -431,4 +432,4 @@ function closeApp(skipclean) {
   initClientMonitor(500);
 
   process.on('exit', closeApp).on('SIGINT', closeApp);
-})(process.argv[2]);
+})();
