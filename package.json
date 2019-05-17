@@ -15,7 +15,7 @@
     "postversion": "npm run push"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=4 <=11"
   },
   "files": [
     "bin"
