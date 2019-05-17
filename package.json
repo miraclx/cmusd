@@ -55,6 +55,7 @@
       [
         "@babel/preset-env",
         {
+          "corejs": "3",
           "useBuiltIns": "usage",
           "targets": {
             "node": 4
@@ -65,7 +66,7 @@
   },
   "dependencies": {
     "chalk": "^2.4.2",
-    "core-js": "^2.6.5",
+    "core-js": "^3.0.1",
     "mpris-service": "^1.1.4"
   },
   "devDependencies": {
@@ -76,10 +77,10 @@
     "babel-preset-airbnb": "^3.2.0",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^4.0.0",
+    "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "prettier": "^1.16.4"
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.17.1"
   },
   "homepage": "https://github.com/miraclx/cmusd#readme"
 }

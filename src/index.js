@@ -218,8 +218,8 @@ function createAlbumArt() {
           '-y',
           tmpfile,
         ]).status
-        ? 0
-        : -1,
+      ? 0
+      : -1,
   };
 }
 
