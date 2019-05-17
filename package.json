@@ -14,6 +14,9 @@
     "version": "npm run build",
     "postversion": "npm run push"
   },
+  "os": [
+    "!win32"
+  ],
   "engines": {
     "node": ">=4 <=11"
   },
