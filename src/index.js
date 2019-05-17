@@ -355,12 +355,30 @@ function checkCmusActivity() {
   return !spawnSync('ps -e | grep -e "\\bcmus\\b"', {shell: true}).status;
 }
 
+function checkBin(...bins) {
+  return !spawnSync('/usr/bin/which', [...bins]).status;
+}
+
+function checkCmusExists() {
+  if (!checkBin('cmus', 'cmus-remote')) {
+    log(1, 'init', `${red('[!]')} Failed to find an appropriate installation of \`cmus\``);
+    log(
+      1,
+      'init',
+      `${yellow('[i]')} This is not an issue with [cmusd]. Please check that \`cmus\` is installed and is in your path`,
+    );
+    log(1, 'init', ` - Please check for a proper way to install \`cmus\` on your device`);
+    log(1, 'init', ` - Maybe start here: https://github.com/cmus/cmus/blob/master/README.md`);
+    closeApp(true);
+  }
+}
+
 function checkDbus() {
   const dbusBins = ['dbus-send', 'dbus-launch', 'dbus-monitor', 'dbus-daemon'];
-  if (spawnSync('/usr/bin/which', [...dbusBins]).status) {
+  if (!checkBin(...dbusBins)) {
     log(1, 'init', `${red('[!]')} Failed to find an appropriate installation of [dbus]`);
-    log(1, 'init', `${yellow('[i]')} This is not an issue with [cmusd]. Please check that dbus is installed and on your path`);
-    log(1, 'init', ` - For non-Linux OS's please check for an existing issue or file a new one to track progress`);
+    log(1, 'init', `${yellow('[i]')} This is not an issue with [cmusd]. Please check that dbus is installed and is in your path`);
+    log(1, 'init', ` - For non-Linux OS's please verify that DBus works on your platform before filing an issue`);
     log(1, 'init', ` - in adding support for your OS's media player or simply file a pull request`);
     closeApp(true);
   }
@@ -395,6 +413,8 @@ function closeApp(skipclean) {
 
   checkTmp();
   checkArgs();
+
+  checkCmusExists();
 
   checkDbus();
   checkPlatform();
