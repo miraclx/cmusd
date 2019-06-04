@@ -409,6 +409,10 @@ function closeApp(skipclean) {
   else carryOn();
 }
 
+function processSIGINT() {
+  if (!stack.cmus_process) closeApp();
+}
+
 (function main() {
   log(1, 'init', 'cmus-client starting...');
 
@@ -431,5 +435,5 @@ function closeApp(skipclean) {
   log(1, 'init', `${green('[+]')} cmus-client launched and listening!`);
   initClientMonitor(500);
 
-  process.on('exit', closeApp).on('SIGINT', closeApp);
+  process.on('exit', closeApp).on('SIGINT', processSIGINT);
 })();
