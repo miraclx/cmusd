@@ -42,10 +42,10 @@ npm run setup
 # Launch the daemon
 cmusd
 
-# Clean all logfiles, quit
+# Clean all logfiles, launch
 cmusd -x
 
-# Remove the lockfile, quit
+# Remove the lockfile, launch
 # (incase previous process didn't close correctly)
 cmusd -q
 
