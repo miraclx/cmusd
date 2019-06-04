@@ -144,7 +144,7 @@ function getStatus() {
 function getMetadata() {
   return {
     'mpris:length': getDuration(),
-    'mpris:artUrl': pathToFileURL(dataSlice.cores.art).href,
+    'mpris:artUrl': dataSlice.cores.art ? pathToFileURL(dataSlice.cores.art).href : '',
     'mpris:trackid': player.objectPath(`tracklist/${parseSlice('tag', 'tracknumber')}`),
 
     'xesam:url': pathToFileURL(dataSlice.cores.file).href,
