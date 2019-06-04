@@ -251,7 +251,7 @@ function updateAlbumArt({status, tmpfile}) {
     log(1, 'albumart', `${red('[!]')} Album art generation for "${getThis()}" failed`);
     log(1, 'albumart', `${cyan('[.]')} Checking static album art for "${getThis()}"`);
     if (!(tmpfile = getStaticArtURL()))
-      return log(1, 'albumart', `|-${red('[!]')} Static album art for "${getThis()}" does not exist`);
+      return log(1, 'albumart', `|- ${red('[!]')} Static album art for "${getThis()}" does not exist`);
     log(1, 'albumart', `|- ${cyan('[~]')} Static album art for "${getThis()}" located!`);
     log(1, 'albumart', `|- ${cyan('(i)')} Location: "${tmpfile}"`);
   }
